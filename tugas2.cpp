@@ -13,226 +13,201 @@ struct Pasien
     Pasien *next;
 };
 
-// Kelas untuk mengelola antrian pasien
-class AntrianPasien
+// Pointer global untuk head dan tail
+Pasien *head = nullptr;
+Pasien *tail = nullptr;
+
+// Fungsi untuk menambahkan pasien baru
+void tambahPasien(int noAntrian, string nama, string keluhan)
 {
-private:
-    Pasien *head;
-    Pasien *tail;
+    Pasien *baru = new Pasien;
+    baru->noAntrian = noAntrian;
+    baru->nama = nama;
+    baru->keluhan = keluhan;
+    baru->prev = nullptr;
+    baru->next = nullptr;
 
-public:
-    // Constructor
-    AntrianPasien()
+    if (head == nullptr)
     {
-        head = nullptr;
-        tail = nullptr;
-    }
-
-    // Destructor
-    ~AntrianPasien()
-    {
-        Pasien *current = head;
-        while (current != nullptr)
-        {
-            Pasien *temp = current;
-            current = current->next;
-            delete temp;
-        }
-    }
-
-    // Method untuk menambahkan pasien baru
-    void tambahPasien(int noAntrian, string nama, string keluhan)
-    {
-        Pasien *baru = new Pasien;
-        baru->noAntrian = noAntrian;
-        baru->nama = nama;
-        baru->keluhan = keluhan;
-        baru->prev = nullptr;
-        baru->next = nullptr;
-
-        // Jika linked list kosong
-        if (head == nullptr)
-        {
-            head = baru;
-            tail = baru;
-            cout << "Pasien berhasil ditambahkan ke daftar.\n";
-            return;
-        }
-
-        // Jika nomor antrian lebih kecil dari head
-        if (noAntrian < head->noAntrian)
-        {
-            baru->next = head;
-            head->prev = baru;
-            head = baru;
-            cout << "Pasien berhasil ditambahkan ke daftar.\n";
-            return;
-        }
-
-        // Jika nomor antrian lebih besar dari tail
-        if (noAntrian > tail->noAntrian)
-        {
-            tail->next = baru;
-            baru->prev = tail;
-            tail = baru;
-            cout << "Pasien berhasil ditambahkan ke daftar.\n";
-            return;
-        }
-
-        // Cari posisi yang tepat untuk menyisipkan
-        Pasien *current = head;
-        while (current != nullptr && current->noAntrian < noAntrian)
-        {
-            current = current->next;
-        }
-
-        // Jika nomor antrian sudah ada
-        if (current != nullptr && current->noAntrian == noAntrian)
-        {
-            cout << "Nomor antrian sudah ada!\n";
-            delete baru;
-            return;
-        }
-
-        // Sisipkan node baru sebelum current
-        baru->prev = current->prev;
-        baru->next = current;
-        current->prev->next = baru;
-        current->prev = baru;
-
+        head = tail = baru;
         cout << "Pasien berhasil ditambahkan ke daftar.\n";
+        return;
     }
 
-    // Method untuk menampilkan antrian dari awal
-    void tampilkanDariAwal()
+    if (noAntrian < head->noAntrian)
     {
-        if (head == nullptr)
-        {
-            cout << "Antrian kosong!\n";
-            return;
-        }
+        baru->next = head;
+        head->prev = baru;
+        head = baru;
+        cout << "Pasien berhasil ditambahkan ke daftar.\n";
+        return;
+    }
 
-        cout << "\nDaftar Antrian (Dari Awal)\n";
-        cout << "================================================\n";
+    if (noAntrian > tail->noAntrian)
+    {
+        tail->next = baru;
+        baru->prev = tail;
+        tail = baru;
+        cout << "Pasien berhasil ditambahkan ke daftar.\n";
+        return;
+    }
 
-        Pasien *current = head;
-        while (current != nullptr)
+    Pasien *current = head;
+    while (current != nullptr && current->noAntrian < noAntrian)
+    {
+        current = current->next;
+    }
+
+    if (current != nullptr && current->noAntrian == noAntrian)
+    {
+        cout << "Nomor antrian sudah ada!\n";
+        delete baru;
+        return;
+    }
+
+    baru->prev = current->prev;
+    baru->next = current;
+    current->prev->next = baru;
+    current->prev = baru;
+
+    cout << "Pasien berhasil ditambahkan ke daftar.\n";
+}
+
+// Fungsi untuk menampilkan antrian dari awal
+void tampilkanDariAwal()
+{
+    if (head == nullptr)
+    {
+        cout << "Antrian kosong!\n";
+        return;
+    }
+
+    cout << "\nDaftar Antrian (Dari Awal)\n";
+    cout << "================================================\n";
+
+    Pasien *current = head;
+    while (current != nullptr)
+    {
+        cout << "No Antrian: " << current->noAntrian << endl;
+        cout << "Nama    : " << current->nama << endl;
+        cout << "Keluhan   : " << current->keluhan << endl;
+        cout << "---\n";
+        current = current->next;
+    }
+}
+
+// Fungsi untuk menampilkan antrian dari akhir
+void tampilkanDariAkhir()
+{
+    if (tail == nullptr)
+    {
+        cout << "Antrian kosong!\n";
+        return;
+    }
+
+    cout << "\nDaftar Antrian (Dari Akhir)\n";
+    cout << "================================================\n";
+
+    Pasien *current = tail;
+    while (current != nullptr)
+    {
+        cout << "No Antrian: " << current->noAntrian << endl;
+        cout << "Nama    : " << current->nama << endl;
+        cout << "Keluhan   : " << current->keluhan << endl;
+        cout << "---\n";
+        current = current->prev;
+    }
+}
+
+// Fungsi untuk mencari pasien
+void cariPasien(int noAntrian)
+{
+    if (head == nullptr)
+    {
+        cout << "Antrian kosong!\n";
+        return;
+    }
+
+    Pasien *current = head;
+    while (current != nullptr)
+    {
+        if (current->noAntrian == noAntrian)
         {
+            cout << "\nPasien Ditemukan:\n";
             cout << "No Antrian: " << current->noAntrian << endl;
             cout << "Nama    : " << current->nama << endl;
             cout << "Keluhan   : " << current->keluhan << endl;
-            cout << "---\n";
-            current = current->next;
+            return;
         }
+        current = current->next;
     }
 
-    // Method untuk menampilkan antrian dari akhir
-    void tampilkanDariAkhir()
+    cout << "Pasien dengan nomor antrian " << noAntrian << " tidak ditemukan.\n";
+}
+
+// Fungsi untuk menghapus pasien
+void hapusPasien(int noAntrian)
+{
+    if (head == nullptr)
     {
-        if (tail == nullptr)
-        {
-            cout << "Antrian kosong!\n";
-            return;
-        }
-
-        cout << "\nDaftar Antrian (Dari Akhir)\n";
-        cout << "================================================\n";
-
-        Pasien *current = tail;
-        while (current != nullptr)
-        {
-            cout << "No Antrian: " << current->noAntrian << endl;
-            cout << "Nama    : " << current->nama << endl;
-            cout << "Keluhan   : " << current->keluhan << endl;
-            cout << "---\n";
-            current = current->prev;
-        }
+        cout << "Antrian kosong!\n";
+        return;
     }
 
-    // Method untuk mencari pasien berdasarkan nomor antrian
-    void cariPasien(int noAntrian)
+    if (head->noAntrian == noAntrian)
     {
-        if (head == nullptr)
-        {
-            cout << "Antrian kosong!\n";
-            return;
-        }
-
-        Pasien *current = head;
-        while (current != nullptr)
-        {
-            if (current->noAntrian == noAntrian)
-            {
-                cout << "\nPasien Ditemukan:\n";
-                cout << "No Antrian: " << current->noAntrian << endl;
-                cout << "Nama    : " << current->nama << endl;
-                cout << "Keluhan   : " << current->keluhan << endl;
-                return;
-            }
-            current = current->next;
-        }
-
-        cout << "Pasien dengan nomor antrian " << noAntrian << " tidak ditemukan.\n";
-    }
-
-    // Method untuk menghapus pasien berdasarkan nomor antrian
-    void hapusPasien(int noAntrian)
-    {
-        if (head == nullptr)
-        {
-            cout << "Antrian kosong!\n";
-            return;
-        }
-
-        // Jika node yang akan dihapus adalah head
-        if (head->noAntrian == noAntrian)
-        {
-            Pasien *temp = head;
-            head = head->next;
-            if (head != nullptr)
-            {
-                head->prev = nullptr;
-            }
-            else
-            {
-                tail = nullptr; // List menjadi kosong
-            }
-            delete temp;
-            cout << "Data pasien berhasil dihapus.\n";
-            return;
-        }
-
-        // Jika node yang akan dihapus adalah tail
-        if (tail->noAntrian == noAntrian)
-        {
-            Pasien *temp = tail;
-            tail = tail->prev;
-            tail->next = nullptr;
-            delete temp;
-            cout << "Data pasien berhasil dihapus.\n";
-            return;
-        }
-
-        // Cari node yang akan dihapus
-        Pasien *current = head;
-        while (current != nullptr && current->noAntrian != noAntrian)
-        {
-            current = current->next;
-        }
-
-        if (current == nullptr)
-        {
-            cout << "Pasien dengan nomor antrian " << noAntrian << " tidak ditemukan.\n";
-            return;
-        }
-
-        // Hapus node yang berada di tengah
-        current->prev->next = current->next;
-        current->next->prev = current->prev;
-        delete current;
+        Pasien *temp = head;
+        head = head->next;
+        if (head != nullptr)
+            head->prev = nullptr;
+        else
+            tail = nullptr;
+        delete temp;
         cout << "Data pasien berhasil dihapus.\n";
+        return;
     }
-};
+
+    if (tail->noAntrian == noAntrian)
+    {
+        Pasien *temp = tail;
+        tail = tail->prev;
+        tail->next = nullptr;
+        delete temp;
+        cout << "Data pasien berhasil dihapus.\n";
+        return;
+    }
+
+    Pasien *current = head;
+    while (current != nullptr && current->noAntrian != noAntrian)
+    {
+        current = current->next;
+    }
+
+    if (current == nullptr)
+    {
+        cout << "Pasien dengan nomor antrian " << noAntrian << " tidak ditemukan.\n";
+        return;
+    }
+
+    current->prev->next = current->next;
+    current->next->prev = current->prev;
+    delete current;
+    cout << "Data pasien berhasil dihapus.\n";
+}
+
+// Fungsi untuk membersihkan semua data saat keluar
+void hapusSemuaPasien()
+{
+    Pasien *current = head;
+    while (current != nullptr)
+    {
+        Pasien *temp = current;
+        current = current->next;
+        delete temp;
+    }
+    head = nullptr;
+    tail = nullptr;
+}
 
 // Fungsi untuk menampilkan menu
 void tampilkanMenu()
@@ -249,7 +224,6 @@ void tampilkanMenu()
 
 int main()
 {
-    AntrianPasien antrian;
     int pilihan, noAntrian;
     string nama, keluhan;
 
@@ -261,7 +235,7 @@ int main()
 
         switch (pilihan)
         {
-        case 1: // Tambah Data Pasien
+        case 1:
             cout << "Masukkan No Antrian : ";
             cin >> noAntrian;
             cin.ignore();
@@ -269,30 +243,31 @@ int main()
             getline(cin, nama);
             cout << "Masukkan Keluhan   : ";
             getline(cin, keluhan);
-            antrian.tambahPasien(noAntrian, nama, keluhan);
+            tambahPasien(noAntrian, nama, keluhan);
             break;
 
-        case 2: // Tampilkan Antrian dari Awal
-            antrian.tampilkanDariAwal();
+        case 2:
+            tampilkanDariAwal();
             break;
 
-        case 3: // Tampilkan Antrian dari Akhir
-            antrian.tampilkanDariAkhir();
+        case 3:
+            tampilkanDariAkhir();
             break;
 
-        case 4: // Cari Data Pasien
+        case 4:
             cout << "Masukkan No Antrian yang dicari: ";
             cin >> noAntrian;
-            antrian.cariPasien(noAntrian);
+            cariPasien(noAntrian);
             break;
 
-        case 5: // Hapus Data Pasien
+        case 5:
             cout << "Masukkan No Antrian yang ingin dihapus: ";
             cin >> noAntrian;
-            antrian.hapusPasien(noAntrian);
+            hapusPasien(noAntrian);
             break;
 
-        case 6: // Keluar
+        case 6:
+            hapusSemuaPasien();
             cout << "Terima kasih telah menggunakan program ini.\n";
             break;
 
